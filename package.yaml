@@ -21,6 +21,9 @@ description:         Please see the README on GitHub at <https://github.com/buzd
 
 dependencies:
 - base >= 4.7 && < 5
+- syntax >= 1
+- syntax-attoparsec >= 1
+- syntax-printer >= 1
 
 library:
   source-dirs: src
