@@ -2,10 +2,11 @@ resolver: lts-13.29
 
 packages:
 - .
-# Dependency packages to be pulled from upstream that are not in the resolver
-# using the same syntax as the packages field.
-# (e.g., acme-missiles-0.3)
-# extra-deps: []
+
+extra-deps:
+- syntax-1.0.0.0@sha256:3959bcb0cea2f2e1d1bf643306962551f6888b0db888beb632477c7929e6966d
+- syntax-attoparsec-1.0.0.0@sha256:06027060943c21a6b896dab4082b311b70499f04fbcb168587628e9d256d066a
+- syntax-printer-1.0.0.0@sha256:54aa9d28dc20b5d84a155d747746b57d7ad895107bb6d03e0bebcbd2547c43fa
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
