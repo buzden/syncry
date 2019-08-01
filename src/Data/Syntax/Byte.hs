@@ -1,34 +1,47 @@
+{-# LANGUAGE FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE Rank2Types #-}
 module Data.Syntax.Byte (SyntaxByte) where
 
-import Data.Bits (FiniteBits, shiftL, shiftR, zeroBits)
+import Control.Lens.SemiIso (SemiIso', semiIso)
+import Control.SIArrow
+import Data.Bits (FiniteBits, (.|.), shiftL, shiftR, zeroBits)
 import Data.Bytes (FiniteBytes)
-import Data.Vector.Unboxed (Vector, fromList)
-import Data.Word (Word8)
+import Data.List as L (unfoldr)
+import Data.MonoTraversable (Element)
+import Data.Syntax
+import Data.Vector (Vector, fromList)
+import qualified Data.Vector as V (reverse)
+import Data.Word (Word8, Word16)
 import GHC.ByteOrder (ByteOrder(..))
 
 class (Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
-  bytes :: FiniteBytes a => ByteOrder -> a -> syn () ()
+  word8 :: Word8 -> syn () ()
+  word8 = char
 
-  anyBytes :: FiniteBytes a => ByteOrder -> syn () a
-  anyBytes = vecN finiteBytesSize anyChar >>^ vecBytesIsoNum
+  anyWord8 :: syn () Word8
+  anyWord8 = anyChar
 
-vecBytesIsoNum :: SemiIso' (Vector Word8) a
-vecBytesIsoNum = semiIso (pure . foldLittleEndianBitsSeq) (pure . fromList . unfoldLittleEndianBitsSeq)
+  word16 :: ByteOrder -> Word16 -> syn () ()
 
-foldLittleEndianBitsSeq :: (Foldable t, Integral a, FiniteBits b, Num b) => t a -> b
-foldLittleEndianBitsSeq = foldr f 0
+  anyWord16 :: ByteOrder -> syn () Word16
+  anyWord16 bo = vecN 2 anyWord8 >>^ vecBytesIsoNum bo
+
+vecBytesIsoNum :: (FiniteBytes a, Integral a) => ByteOrder -> SemiIso' (Vector Word8) a
+vecBytesIsoNum bo = semiIso (pure . foldLittleEndianBytes . rev bo) (pure . rev bo . fromList . unfoldLittleEndianBytes)
   where
-    f a curr = shifted curr .|. coerseAsBits a
-    shifted b = shiftL b $ finiteBitsSize b
+    rev LittleEndian = id
+    rev BigEndian = V.reverse
 
-unfoldLittleEndianBitsSeq :: (Integral b, FiniteBits a, Num a) => b -> [a]
-unfoldLittleEndianBitsSeq = unfoldr f
+foldLittleEndianBytes :: (Foldable t, FiniteBytes b, Num b) => t Word8 -> b
+foldLittleEndianBytes = foldr f 0
+  where
+    f w8 currB = shiftL currB 8 .|. byteAsB w8
+    byteAsB    = fromInteger . toInteger -- assuming that b is not less than Word8 since `FiniteBytes b`
+
+unfoldLittleEndianBytes :: (Integral b, FiniteBytes b) => b -> [Word8]
+unfoldLittleEndianBytes = L.unfoldr f
   where
     f b = if b == zeroBits
       then Nothing
-      else Just (coerceAsBits b, shiftR b $ finiteBitsSize b)
-
-coerceAsBits :: (Integral a, FiniteBits b, Num b) => a -> b
-coerceAsBits = fromInteger . (.&. maskForB) . toInteger
-  where
-    maskForB = foldr (.|.) 0 $ fmap bit $ [0 .. (finiteBitsSize zeroBits::b) - 1]
+      else Just (lowestByte b, shiftR b 8)
+    lowestByte x = fromInteger $ toInteger x `mod` 2^8
