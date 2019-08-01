@@ -24,6 +24,9 @@ dependencies:
 - syntax >= 1
 - syntax-attoparsec >= 1
 - syntax-printer >= 1
+- semi-iso >= 1
+- vector
+- mono-traversable
 
 library:
   source-dirs: src
