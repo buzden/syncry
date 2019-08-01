@@ -1,0 +1,3 @@
+[submodule "third-party/semi-iso"]
+	path = third-party/semi-iso
+	url = https://github.com/pavelchristof/semi-iso

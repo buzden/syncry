@@ -2,6 +2,7 @@ resolver: lts-13.29
 
 packages:
 - .
+- third-party/semi-iso
 
 extra-deps:
 - syntax-1.0.0.0@sha256:3959bcb0cea2f2e1d1bf643306962551f6888b0db888beb632477c7929e6966d
