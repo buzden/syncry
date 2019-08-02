@@ -32,13 +32,13 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   word16 bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
 
   anyWord16 :: ByteOrder -> syn () Word16
-  anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< vecIsoList ^<< vecN 2 anyWord8
+  anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 2 anyWord8
 
   word32 :: ByteOrder -> Word32 -> syn () ()
   word32 bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
 
   anyWord32 :: ByteOrder -> syn () Word32
-  anyWord32 bo = leBytesPrism ^<< leIsoBo bo ^<< vecIsoList ^<< vecN 4 anyWord8
+  anyWord32 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 4 anyWord8
 
   sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
   sizedByteSeq size = (size >>^ byteIsoInt) >>> vec anyWord8
@@ -50,9 +50,6 @@ byteIsoInt = iso (fromInteger . toInteger) (fromInteger . toInteger)
 
 leBytesPrism :: ByteSeqNum a => Prism' [Word8] a
 leBytesPrism = prism' toByteSeq fromByteSeq
-
-vecIsoList :: Iso' (Vector a) [a]
-vecIsoList = iso V.toList V.fromList
 
 -- semiiso between little-endian and lists of given endianness
 leIsoBo :: ByteOrder -> Iso' [a] [a]
