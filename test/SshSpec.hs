@@ -9,7 +9,7 @@
 
 module SshSpec where
 
-import Prelude hiding (takeWhile, words)
+import Prelude hiding (takeWhile)
 import Test.Hspec
 import Data.Word
 import Control.SIArrow
@@ -52,7 +52,7 @@ ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... takeTill -- "not enough input"
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
-   where version = _Version /$/ words [83, 83, 72, 45, 50, 46, 48, 45] */ (packed ^<< takeTill (== 10)) /* word8 10
+   where version = _Version /$/ wordSeq [83, 83, 72, 45, 50, 46, 48, 45] */ (packed ^<< takeTill (== 10)) /* word8 10
          ignore = _Ignore /$/ word8 2 */ vecN 1 anyWord8 -- takeWhile (const True)
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 

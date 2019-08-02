@@ -38,8 +38,8 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   word64 :: ByteOrder -> Word64 -> syn () ()
   word64 = wordX
 
-  words :: [Word8] -> syn () ()
-  words ws = sisequence_ $ word8 <$> ws
+  wordSeq :: [Word8] -> syn () ()
+  wordSeq ws = sisequence_ $ word8 <$> ws
 
   -- Number acquiring
   anyWord8 :: syn () Word8
