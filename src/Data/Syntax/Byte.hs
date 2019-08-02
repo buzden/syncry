@@ -12,8 +12,7 @@ import Control.SIArrow
 import Data.Bits (FiniteBits, (.|.), shiftL, shiftR, zeroBits)
 import Data.Bytes (ByteSeqNum, fromByteSeq, toByteSeq)
 import Data.List as L (unfoldr)
-import Data.MonoTraversable (Element, otoList)
-import Data.Sequences (IsSequence)
+import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator (vec)
 import Data.Vector (Vector)
@@ -39,8 +38,8 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   word64 :: ByteOrder -> Word64 -> syn () ()
   word64 = wordX
 
-  words :: (IsSequence s, Element s ~ Word8) => s -> syn () ()
-  words ws = sisequence_ $ word8 <$> otoList ws
+  words :: [Word8] -> syn () ()
+  words ws = sisequence_ $ word8 <$> ws
 
   -- Number acquiring
   anyWord8 :: syn () Word8
