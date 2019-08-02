@@ -11,10 +11,13 @@ import Control.Lens.SemiIso (SemiIso', semiIso)
 import Control.SIArrow
 import Data.Bits (FiniteBits, (.|.), shiftL, shiftR, zeroBits)
 import Data.Bytes (ByteSeqNum, fromByteSeq, toByteSeq)
+import qualified Data.ByteString as BS
 import Data.List as L (unfoldr)
 import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator (vec)
+import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Vector (Vector)
 import qualified Data.Vector as V (fromList, reverse, toList)
 import Data.Word (Word8, Word16, Word32, Word64)
@@ -60,6 +63,10 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   -- Sequence getting
   sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
   sizedByteSeq size = (size >>^ byteIsoInt) >>> vec anyWord8
+
+  -- Text function
+  utf8Text :: Text -> syn () ()
+  utf8Text = wordSeq . BS.unpack . encodeUtf8
 
 instance (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn
 

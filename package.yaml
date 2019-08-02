@@ -28,6 +28,8 @@ dependencies:
 - lens
 - vector
 - mono-traversable
+- text
+- bytestring
 
 library:
   source-dirs: src
