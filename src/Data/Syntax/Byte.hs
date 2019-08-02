@@ -2,6 +2,7 @@
 {-# LANGUAGE Rank2Types #-}
 module Data.Syntax.Byte (SyntaxByte) where
 
+import Control.Category ((>>>))
 import Control.Lens.Iso (Iso', iso)
 import Control.Lens.Prism (Prism', prism')
 import Control.Lens.SemiIso (SemiIso', semiIso)
@@ -11,6 +12,7 @@ import Data.Bytes (ByteSeqNum, fromByteSeq, toByteSeq)
 import Data.List as L (unfoldr)
 import Data.MonoTraversable (Element)
 import Data.Syntax
+import Data.Syntax.Combinator (vec)
 import Data.Vector (Vector)
 import qualified Data.Vector as V (fromList, reverse, toList)
 import Data.Word (Word8, Word16)
@@ -28,6 +30,12 @@ class (Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
 
   anyWord16 :: ByteOrder -> syn () Word16
   anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< vecIsoList ^<< vecN 2 anyWord8
+
+  sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
+  sizedByteSeq size = (size >>^ byteIsoInt) >>> vec anyWord8
+
+byteIsoInt :: ByteSeqNum a => Iso' a Int -- actually, this implementation can loses or corrupt runtime values
+byteIsoInt = iso (fromInteger . toInteger) (fromInteger . toInteger)
 
 leBytesPrism :: ByteSeqNum a => Prism' [Word8] a
 leBytesPrism = prism' toByteSeq fromByteSeq
