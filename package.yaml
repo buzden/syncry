@@ -45,6 +45,7 @@ executables:
 
 tests:
   syncry-test:
+    build-tools: hspec-discover
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -53,3 +54,14 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - syncry
+    - hspec
+    - HUnit
+    - attoparsec
+    - syntax >= 1
+    - syntax-attoparsec >= 1
+    - syntax-printer >= 1
+    - semi-iso >= 1
+    - lens
+    - vector
+    - mono-traversable
+    - bytestring
