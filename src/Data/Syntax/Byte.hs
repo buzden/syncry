@@ -28,14 +28,17 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   anyWord8 :: syn () Word8
   anyWord8 = anyChar
 
+  wordX :: ByteSeqNum a => ByteOrder -> a -> syn () ()
+  wordX bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
+
   word16 :: ByteOrder -> Word16 -> syn () ()
-  word16 bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
+  word16 = wordX
 
   anyWord16 :: ByteOrder -> syn () Word16
   anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 2 anyWord8
 
   word32 :: ByteOrder -> Word32 -> syn () ()
-  word32 bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
+  word32 = wordX
 
   anyWord32 :: ByteOrder -> syn () Word32
   anyWord32 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 4 anyWord8
