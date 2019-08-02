@@ -17,7 +17,7 @@ import Data.Syntax
 import Data.Syntax.Combinator (vec)
 import Data.Vector (Vector)
 import qualified Data.Vector as V (fromList, reverse, toList)
-import Data.Word (Word8, Word16, Word32)
+import Data.Word (Word8, Word16, Word32, Word64)
 import GHC.ByteOrder (ByteOrder(..))
 import qualified Data.Syntax.Attoparsec.ByteString.Lazy as S
 
@@ -35,6 +35,9 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   word32 :: ByteOrder -> Word32 -> syn () ()
   word32 = wordX
 
+  word64 :: ByteOrder -> Word64 -> syn () ()
+  word64 = wordX
+
   -- Number acquiring
   anyWord8 :: syn () Word8
   anyWord8 = anyChar
@@ -47,6 +50,9 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
 
   anyWord32 :: ByteOrder -> syn () Word32
   anyWord32 = anyWordX 4
+
+  anyWord64 :: ByteOrder -> syn () Word32
+  anyWord64 = anyWordX 8
 
   -- Sequence getting
   sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
