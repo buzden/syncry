@@ -39,11 +39,14 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   anyWord8 :: syn () Word8
   anyWord8 = anyChar
 
+  anyWordX :: ByteSeqNum a => Int -> ByteOrder -> syn () a
+  anyWordX bytesCount bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN bytesCount anyWord8
+
   anyWord16 :: ByteOrder -> syn () Word16
-  anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 2 anyWord8
+  anyWord16 = anyWordX 2
 
   anyWord32 :: ByteOrder -> syn () Word32
-  anyWord32 bo = leBytesPrism ^<< leIsoBo bo ^<< packed ^<< vecN 4 anyWord8
+  anyWord32 = anyWordX 4
 
   -- Sequence getting
   sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
