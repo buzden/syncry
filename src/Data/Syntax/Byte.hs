@@ -70,7 +70,7 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
 
 instance (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn
 
-byteIsoInt :: ByteSeqNum a => Iso' a Int -- actually, this implementation can loses or corrupt runtime values
+byteIsoInt :: ByteSeqNum a => Iso' a Int -- actually, this implementation can lose or corrupt runtime values
 byteIsoInt = iso (fromInteger . toInteger) (fromInteger . toInteger)
 
 leBytesPrism :: ByteSeqNum a => Prism' [Word8] a
