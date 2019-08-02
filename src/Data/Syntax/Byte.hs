@@ -18,7 +18,7 @@ import qualified Data.Vector as V (fromList, reverse, toList)
 import Data.Word (Word8, Word16)
 import GHC.ByteOrder (ByteOrder(..))
 
-class (Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
+class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
   word8 :: Word8 -> syn () ()
   word8 = char
 
