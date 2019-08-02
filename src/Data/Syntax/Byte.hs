@@ -24,6 +24,7 @@ class (Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
   anyWord8 = anyChar
 
   word16 :: ByteOrder -> Word16 -> syn () ()
+  word16 bo w = sisequence_ $ leBo bo $ word8 <$> toByteSeq w
 
   anyWord16 :: ByteOrder -> syn () Word16
   anyWord16 bo = leBytesPrism ^<< leIsoBo bo ^<< vecIsoList ^<< vecN 2 anyWord8
@@ -36,5 +37,10 @@ vecIsoList = iso V.toList V.fromList
 
 -- semiiso between little-endian and lists of given endianness
 leIsoBo :: ByteOrder -> Iso' [a] [a]
-leIsoBo LittleEndian = id
-leIsoBo BigEndian    = iso reverse reverse
+leIsoBo bo = iso l l
+  where
+    l = leBo bo
+
+leBo :: ByteOrder -> [a] -> [a]
+leBo LittleEndian = id
+leBo BigEndian    = reverse
