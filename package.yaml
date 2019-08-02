@@ -25,6 +25,7 @@ dependencies:
 - syntax-attoparsec >= 1
 - syntax-printer >= 1
 - semi-iso >= 1
+- lens
 - vector
 - mono-traversable
 
