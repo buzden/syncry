@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE Rank2Types #-}
-module Data.Syntax.Byte (SyntaxByte(..)) where
+module Data.Syntax.Byte (SyntaxByte(..), texted) where
 
 import Control.Category ((>>>))
 import Control.Lens.Iso (Iso', iso)
@@ -16,6 +16,7 @@ import Data.List as L (unfoldr)
 import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator (vec)
+import Data.Sequences (IsSequence)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Vector (Vector)
@@ -69,6 +70,12 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   utf8Text = wordSeq . BS.unpack . encodeUtf8
 
 instance (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn
+
+texted :: (IsSequence seq, Element seq ~ Word8) => Iso' seq Text
+texted = packed . wordListIsoText
+
+wordListIsoText :: Iso' [Word8] Text
+wordListIsoText = iso (decodeUtf8 . BS.pack) (BS.unpack . encodeUtf8)
 
 byteIsoInt :: ByteSeqNum a => Iso' a Int -- actually, this implementation can lose or corrupt runtime values
 byteIsoInt = iso (fromInteger . toInteger) (fromInteger . toInteger)
