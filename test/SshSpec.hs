@@ -28,6 +28,7 @@ import qualified Data.Syntax.Attoparsec.ByteString.Lazy as S
 import qualified Data.ByteString.Builder as B
 import qualified Data.Syntax.Printer.ByteString.Lazy as P
 import Test.HUnit.Lang (assertFailure)
+import Data.Text (Text)
 
 asciiL = BL.unpack . BC.pack
 ascii = fromList . BL.unpack . BC.pack
@@ -40,7 +41,7 @@ shouldParseAs spec a b =
 shouldGenerateAs spec a b =
    (B.toLazyByteString <$> P.runPrinter_ spec a) `shouldBe` Right b
 
-data Payload = Version [Word8]
+data Payload = Version Text
              | Ignore (Vector Word8)
              | ServiceRequest (Vector Word8)
              | ServiceAccept (Vector Word8)
@@ -52,17 +53,17 @@ ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... takeTill -- "not enough input"
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
-   where version = _Version /$/ wordSeq [83, 83, 72, 45, 50, 46, 48, 45] */ (packed ^<< takeTill (== 10)) /* word8 10
+   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< takeTill (== 10)) /* word8 10
          ignore = _Ignore /$/ word8 2 */ vecN 1 anyWord8 -- takeWhile (const True)
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 
 spec = describe "SSH spec" do
    it "parses" do
       let shouldParsePayload = shouldParseAs ssh2payload
-      "SSH-2.0-TesT\r\n" `shouldParsePayload` Version (asciiL "TesT\r")
+      "SSH-2.0-TesT\r\n" `shouldParsePayload` Version "TesT\r"
       "\x2_" `shouldParsePayload` Ignore (ascii "_")
       "\x5\x6\0\0\0test" `shouldParsePayload` ServiceRequest (ascii "test")
 
    it "generates" do
       let shouldGeneratePayload = shouldGenerateAs ssh2payload
-      Version (asciiL "TesT\r") `shouldGeneratePayload` "SSH-2.0-TesT\r\n"
+      Version "TesT\r" `shouldGeneratePayload` "SSH-2.0-TesT\r\n"
