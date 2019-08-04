@@ -7,23 +7,18 @@ module Data.Syntax.Byte (SyntaxByte(..), texted) where
 import Control.Category ((>>>))
 import Control.Lens.Iso (Iso', iso)
 import Control.Lens.Prism (Prism', prism')
-import Control.Lens.SemiIso (SemiIso', semiIso)
-import Control.SIArrow
-import Data.Bits (FiniteBits, (.|.), shiftL, shiftR, zeroBits)
+import Control.SIArrow (SIArrow, (^<<), (>>^), sisequence_)
 import Data.Bytes (ByteSeqNum, fromByteSeq, toByteSeq)
 import qualified Data.ByteString as BS
-import Data.List as L (unfoldr)
 import Data.MonoTraversable (Element)
-import Data.Syntax
+import Data.Syntax (Syntax, Seq, anyChar, char, packed, vecN)
 import Data.Syntax.Combinator (vec)
 import Data.Sequences (IsSequence)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Vector (Vector)
-import qualified Data.Vector as V (fromList, reverse, toList)
 import Data.Word (Word8, Word16, Word32, Word64)
 import GHC.ByteOrder (ByteOrder(..))
-import qualified Data.Syntax.Attoparsec.ByteString.Lazy as S
 
 class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
   -- Constant matchers
