@@ -10,27 +10,28 @@
 module SshSpec where
 
 import Prelude hiding (takeWhile)
-import Test.Hspec
-import Data.Word
-import Control.SIArrow
+
 import Control.Category.Structures
 import Control.Lens.TH
-import GHC.ByteOrder
-import Data.Vector hiding (takeWhile)
-import Data.MonoTraversable (Element)
-import Data.Syntax
-import Data.Syntax.Combinator
-import Data.Syntax.Byte
-import Data.Syntax.Poly
+import Control.SIArrow
+import qualified Data.Attoparsec.ByteString.Lazy as AP
+import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Char8 as BC
-import qualified Data.Attoparsec.ByteString.Lazy as AP
+import Data.MonoTraversable (Element)
 import qualified Data.Syntax.Attoparsec.ByteString.Lazy as S
-import qualified Data.ByteString.Builder as B
 import qualified Data.Syntax.Printer.ByteString.Lazy as P
-import Test.HUnit.Lang (assertFailure)
+import Data.Syntax
+import Data.Syntax.Byte
+import Data.Syntax.Combinator
+import Data.Syntax.Poly
 import Data.Text (Text)
+import Data.Vector hiding (takeWhile)
+import Data.Word
+import GHC.ByteOrder
 import qualified GHC.Exts as IL (fromList)
+import Test.Hspec
+import Test.HUnit.Lang (assertFailure)
 
 ascii = IL.fromList . BL.unpack . BC.pack
 
