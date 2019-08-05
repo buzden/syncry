@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 import Data.MonoTraversable (Element)
 import Data.Syntax (Syntax, Seq, anyChar, char, packed, vecN)
 import Data.Syntax.Combinator (vec)
-import Data.Syntax.Extra (packed')
+import Data.Syntax.Poly (packed')
 import Data.Sequences (IsSequence)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)

@@ -21,7 +21,7 @@ import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator
 import Data.Syntax.Byte
-import Data.Syntax.Extra
+import Data.Syntax.Poly
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Char8 as BC
 import qualified Data.Attoparsec.ByteString.Lazy as AP

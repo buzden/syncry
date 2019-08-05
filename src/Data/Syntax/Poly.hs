@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeFamilies #-}
-module Data.Syntax.Extra (
+module Data.Syntax.Poly (
     packed',
     take', takeArr',
     takeWhile', takeWhile1',
