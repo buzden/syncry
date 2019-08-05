@@ -9,28 +9,26 @@
 
 module SshSpec where
 
-import Prelude hiding (takeWhile)
-import Test.Hspec
-import Data.Word
-import Control.SIArrow
-import Control.Category.Structures
-import Control.Lens.TH
-import GHC.ByteOrder
-import Data.Vector hiding (takeWhile)
-import Data.MonoTraversable (Element)
-import Data.Syntax
-import Data.Syntax.Combinator
-import Data.Syntax.Byte
-import Data.Syntax.Poly
+import Control.Category.Structures ((/+/))
+import Control.Lens.TH (makePrisms)
+import Control.SIArrow ((^<<), (/$/), (*/))
+import qualified Data.Attoparsec.ByteString.Lazy as AP
+import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Char8 as BC
-import qualified Data.Attoparsec.ByteString.Lazy as AP
+import Data.MonoTraversable (Element)
 import qualified Data.Syntax.Attoparsec.ByteString.Lazy as S
-import qualified Data.ByteString.Builder as B
 import qualified Data.Syntax.Printer.ByteString.Lazy as P
-import Test.HUnit.Lang (assertFailure)
+import Data.Syntax.Byte (SyntaxByte, anyWord8, anyWord32, sizedByteSeq', texted, utf8Text, word8)
+import Data.Syntax.Combinator (manyTill)
+import Data.Syntax.Poly (takeWhile')
 import Data.Text (Text)
+import Data.Vector (Vector)
+import Data.Word (Word8)
+import GHC.ByteOrder (ByteOrder(..))
 import qualified GHC.Exts as IL (fromList)
+import Test.Hspec (describe, it, shouldBe)
+import Test.HUnit.Lang (assertFailure)
 
 ascii = IL.fromList . BL.unpack . BC.pack
 
@@ -54,8 +52,8 @@ ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
    where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< anyWord8 `manyTill` word8 10)
-         ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
-         servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
+         ignore = _Ignore /$/ word8 2 */ takeWhile' (const True)
+         servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq' (anyWord32 LittleEndian)
 
 spec = describe "SSH spec" do
    it "parses" do
