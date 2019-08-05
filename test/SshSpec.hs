@@ -30,9 +30,9 @@ import qualified Data.ByteString.Builder as B
 import qualified Data.Syntax.Printer.ByteString.Lazy as P
 import Test.HUnit.Lang (assertFailure)
 import Data.Text (Text)
+import qualified GHC.Exts as IL (fromList)
 
-asciiL = BL.unpack . BC.pack
-ascii = fromList . BL.unpack . BC.pack
+ascii = IL.fromList . BL.unpack . BC.pack
 
 shouldParseAs spec a b =
    case AP.parse (S.getParser_ spec <* AP.endOfInput) a of
