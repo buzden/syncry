@@ -52,7 +52,6 @@ $(makePrisms ''Payload)
 
 ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
-   -- BUG: version ... takeTill -- "not enough input"
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
    where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< endingWith 10)
          ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
@@ -63,7 +62,7 @@ spec = describe "SSH spec" do
       let shouldParsePayload = shouldParseAs ssh2payload
       "SSH-2.0-TesT\r\n" `shouldParsePayload` Version "TesT\r"
       "\x2__" `shouldParsePayload` Ignore (ascii "__")
-      "\x5\x6\0\0\0test" `shouldParsePayload` ServiceRequest (ascii "test")
+      "\x5\x6\0\0\0tested" `shouldParsePayload` ServiceRequest (ascii "tested")
 
    it "generates" do
       let shouldGeneratePayload = shouldGenerateAs ssh2payload
