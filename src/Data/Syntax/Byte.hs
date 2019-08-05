@@ -13,12 +13,14 @@ import qualified Data.ByteString as BS
 import Data.MonoTraversable (Element)
 import Data.Syntax (Syntax, Seq, anyChar, char, packed, vecN)
 import Data.Syntax.Combinator (vec)
+import Data.Syntax.Poly (packed')
 import Data.Sequences (IsSequence)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Data.Vector (Vector)
 import Data.Word (Word8, Word16, Word32, Word64)
 import GHC.ByteOrder (ByteOrder(..))
+import GHC.Exts (IsList, Item)
 
 class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn where
   -- Constant matchers
@@ -59,6 +61,9 @@ class (SIArrow syn, Syntax syn, Element (Seq syn) ~ Word8) => SyntaxByte syn whe
   -- Sequence getting
   sizedByteSeq :: ByteSeqNum a => syn () a -> syn () (Vector Word8)
   sizedByteSeq size = (size >>^ byteIsoInt) >>> vec anyWord8
+
+  sizedByteSeq' :: (ByteSeqNum a, IsList l, Item l ~ Word8) => syn () a -> syn () l
+  sizedByteSeq' size = packed' ^<< sizedByteSeq size
 
   -- Text function
   utf8Text :: Text -> syn () ()

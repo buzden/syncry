@@ -21,7 +21,7 @@ import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator
 import Data.Syntax.Byte
-import Data.Syntax.Extra
+import Data.Syntax.Poly
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Char8 as BC
 import qualified Data.Attoparsec.ByteString.Lazy as AP
@@ -30,9 +30,9 @@ import qualified Data.ByteString.Builder as B
 import qualified Data.Syntax.Printer.ByteString.Lazy as P
 import Test.HUnit.Lang (assertFailure)
 import Data.Text (Text)
+import qualified GHC.Exts as IL (fromList)
 
-asciiL = BL.unpack . BC.pack
-ascii = fromList . BL.unpack . BC.pack
+ascii = IL.fromList . BL.unpack . BC.pack
 
 shouldParseAs spec a b =
    case AP.parse (S.getParser_ spec <* AP.endOfInput) a of
@@ -53,7 +53,7 @@ $(makePrisms ''Payload)
 ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
-   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< endingWith 10)
+   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< anyWord8 `manyTill` word8 10)
          ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 
