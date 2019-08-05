@@ -54,7 +54,7 @@ ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... takeTill -- "not enough input"
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
-   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< takeTill (== 10)) /* word8 10
+   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< endingWith 10)
          ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 
