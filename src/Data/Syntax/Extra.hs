@@ -6,7 +6,7 @@ module Data.Syntax.Extra (
     takeTill', takeTill1',
     vecN', vecNSepBy',
     vec', vecSepBy',
-    endingWith) where
+    ) where
 
 import Prelude hiding (take, takeWhile)
 
@@ -24,9 +24,6 @@ packed' = packed . listIsoIsList
 
 listIsoIsList :: (IsList l, Item l ~ a) => Iso' [a] l
 listIsoIsList = iso IL.fromList IL.toList
-
-endingWith :: Syntax syn => Element (Seq syn) -> syn () (Seq syn)
-endingWith terminator = takeWhile (/= terminator) /* char terminator
 
 manyTill' :: (Syntax syn, IsList l, Item l ~ a) => syn () a -> syn () () -> syn () l
 manyTill' a term = manyTill a term >>^ packed'

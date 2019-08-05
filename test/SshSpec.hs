@@ -53,7 +53,7 @@ $(makePrisms ''Payload)
 ssh2payload :: (SyntaxByte syn) => syn () Payload
 ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
-   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< endingWith 10)
+   where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< anyWord8 `manyTill` word8 10)
          ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 
