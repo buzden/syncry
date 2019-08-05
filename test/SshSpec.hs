@@ -21,6 +21,7 @@ import Data.MonoTraversable (Element)
 import Data.Syntax
 import Data.Syntax.Combinator
 import Data.Syntax.Byte
+import Data.Syntax.Extra
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Lazy.Char8 as BC
 import qualified Data.Attoparsec.ByteString.Lazy as AP
@@ -54,14 +55,14 @@ ssh2payload = version /+/ ignore /+/ servReq
    -- BUG: version ... takeTill -- "not enough input"
    -- BUG: version ... vecN 5 anyWord8 -- reverse order
    where version = _Version /$/ utf8Text "SSH-2.0-" */ (texted ^<< takeTill (== 10)) /* word8 10
-         ignore = _Ignore /$/ word8 2 */ vecN 1 anyWord8 -- takeWhile (const True)
+         ignore = _Ignore /$/ word8 2 */ (packed' ^<< takeWhile (const True))
          servReq = _ServiceRequest /$/ word8 5 */ sizedByteSeq (anyWord32 LittleEndian)
 
 spec = describe "SSH spec" do
    it "parses" do
       let shouldParsePayload = shouldParseAs ssh2payload
       "SSH-2.0-TesT\r\n" `shouldParsePayload` Version "TesT\r"
-      "\x2_" `shouldParsePayload` Ignore (ascii "_")
+      "\x2__" `shouldParsePayload` Ignore (ascii "__")
       "\x5\x6\0\0\0test" `shouldParsePayload` ServiceRequest (ascii "test")
 
    it "generates" do
