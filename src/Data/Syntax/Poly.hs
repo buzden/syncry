@@ -1,6 +1,8 @@
 {-# LANGUAGE TypeFamilies #-}
 module Data.Syntax.Poly (
     packed',
+    manyTill',
+    sepBy', sepBy1',
     take', takeArr',
     takeWhile', takeWhile1',
     takeTill', takeTill1',
